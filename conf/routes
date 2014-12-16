@@ -6,6 +6,8 @@ GET         /                        controllers.Application.index
 
 POST        /login                   controllers.Application.authenticate
 
+GET         /login                   controllers.Application.login
+
 # Javascript Routing
 GET         /javascriptRoutes        controllers.Application.javascriptRoutes
 

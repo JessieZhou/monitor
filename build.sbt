@@ -24,12 +24,6 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "5.1.31"
 )
 
-organization := "be.objectify"
-
-libraryDependencies ++= Seq(
-  "be.objectify" %% "deadbolt-scala" % "2.3.2"
-)
-
 libraryDependencies += "com.twitter" % "util-core_2.10" % "6.22.1"
 
 libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.1"
