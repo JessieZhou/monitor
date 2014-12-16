@@ -1,14 +1,11 @@
 package models
 
-import java.util
 
 import anorm.SqlParser._
 import anorm._
-import be.objectify.deadbolt.core.models.{Role, Permission, Subject}
 import play.api.cache.Cache
 import play.api.db.DB
 import play.api.Play.current
-import play.libs.Scala
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,8 +21,7 @@ case class User(id: Long,
                 reportphone: Option[String],
                 reportemail: Option[String],
                 needemail: Int,
-                needphone: Int,
-                needalert: Int
+                needphone: Int
                  )
 object User {
 
@@ -39,9 +35,8 @@ object User {
       get[Option[String]]("user.reportphone") ~
       get[Option[String]]("user.reportemail") ~
       get[Int]("user.needemail") ~
-      get[Int]("user.needphone") ~
-      get[Int]("user.needalert") map { case id ~ email ~ password ~ reportphone ~ reportemail ~ needemail ~ needphone ~ needalert =>
-      User(id, email, password, reportphone, reportemail, needemail, needphone, needalert)
+      get[Int]("user.needphone") map { case id ~ email ~ password ~ reportphone ~ reportemail ~ needemail ~ needphone  =>
+      User(id, email, password, reportphone, reportemail, needemail, needphone)
     }
   }
 
