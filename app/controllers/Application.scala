@@ -75,11 +75,11 @@ object Application extends Controller with DeadboltActions{
               val md5Hex = DigestUtils.md5Hex(userInfo._2+user.get.email)
               if (user.get.password == md5Hex) {
                 Logger.info(s"${user.get.email} login OK")
-                if(user.get.role == 4){
+//                if(user.get.role == 4){
+//                  Redirect(routes.Application.index()).withSession("session.id"->user.get.id.toString,"session.password"->user.get.password)
+//                }else{
                   Redirect(routes.Application.index()).withSession("session.id"->user.get.id.toString,"session.password"->user.get.password)
-                }else{
-                  Redirect(routes.Application.index()).withSession("session.id"->user.get.id.toString,"session.password"->user.get.password)
-                }
+//                }
               } else {
                 Logger.info(s"${user.get.email} login fail")
                 Ok(views.html.neonlogin(loginForm.fill((userInfo._1, "")).withError("perror", "password error")))

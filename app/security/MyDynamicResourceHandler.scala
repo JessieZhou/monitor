@@ -1,7 +1,7 @@
 package security
 
 import be.objectify.deadbolt.scala.{DeadboltHandler, DynamicResourceHandler}
-import models.{Task, Project, User}
+import models.{User}
 import play.api.mvc.{AnyContent, Request}
 
 /**

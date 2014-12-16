@@ -31,7 +31,8 @@ class MyDeadboltHandler(dynamicResourceHandler: Option[DynamicResourceHandler] =
       if (uid.isDefined && password.isDefined ) {
         val user = User.getUserByIdFromCache(uid.get.toLong)
         if(password.get == user.password){
-          Some(user)
+//          Some(user)
+          None
         }else {
           None
         }
