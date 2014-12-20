@@ -28,4 +28,8 @@ object Emotionword {
       SQL("select * from emotionword").as(simple *)
     }.map(ew => (ew.word,ew.value)).toMap
   }
+
+  def getEmotion(word: String) = {
+    allEmotionWords.getOrElse(word, 0)
+  }
 }

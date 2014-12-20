@@ -20,7 +20,7 @@ object Application extends Controller with Secured {
   def index =
     withAuth { username => implicit request =>
       val user = User.getUserByEmailFromCache(username)
-      val keywords = Keyword.getKeywordsByUid(user.id)
+      val keywords = UserKeyword.getByUid(user.id)
       Ok(views.html.index(User.getUserByEmail(username).get))
     }
 
