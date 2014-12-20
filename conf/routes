@@ -4,9 +4,9 @@
 
 GET         /                        controllers.Application.index
 
-POST        /login                   controllers.Application.authenticate
+POST        /login                   controllers.UserApp.authenticate
 
-GET         /login                   controllers.Application.login
+GET         /login                   controllers.UserApp.login
 
 # Javascript Routing
 GET         /javascriptRoutes        controllers.Application.javascriptRoutes
