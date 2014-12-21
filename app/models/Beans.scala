@@ -71,3 +71,5 @@ object ExternalWebsite {
     }
   }
 }
+
+case class PageItem(url: String, title: String)

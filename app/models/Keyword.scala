@@ -121,14 +121,24 @@ object UserKeyword {
     DB.withConnection { implicit c =>
       SQL("update userkeyword set uid={uid} where id={id}")
         .on('uid -> -1L, 'id->id)
-        .executeUpdate()
+        .execute()
     }
   }
 
-  def addUserKeyword(uid: Long, kid: Long) = {
-    DB.withConnection{implicit c=>
-      val ukid: Option[Long] = SQL("insert into userkeyword(uid,kid) values({uid},{kid})").on('uid->uid,'kid->kid).executeInsert()
-      ukid.getOrElse(-1L)
+  def addUserKeyword(uid: Long, keyword: String) = {
+    def addUserKeyword(kid: Long) = {
+      DB.withConnection{implicit c=>
+        val ukid: Option[Long] = SQL("insert into userkeyword(uid,kid) values({uid},{kid})").on('uid->uid,'kid->kid).executeInsert()
+        ukid.getOrElse(-1L)
+      }
+    }
+
+    val kw = Keyword.getByName(keyword)
+    if(kw.isDefined){
+      addUserKeyword(kw.get.id)
+    } else {
+      val kid = Keyword.addKeyword(keyword)
+      addUserKeyword(kid)
     }
   }
 

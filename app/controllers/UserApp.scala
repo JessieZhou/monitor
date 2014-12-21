@@ -21,7 +21,9 @@ import scala.concurrent.duration._
 object UserApp extends Controller with Secured{
   val loginForm = Form(tuple("email" -> email, "password" -> nonEmptyText()))
 
-  val registerForm = Form(tuple("username" -> nonEmptyText(), "email" -> email, "password" -> nonEmptyText(), "repassword" -> nonEmptyText(), "role" -> number(), "group" -> longNumber(), "team" -> longNumber()))
+  val registerForm = Form(
+    tuple("email" -> email, "password" -> nonEmptyText(),"repassword"->nonEmptyText
+  )
 
   // login page
   def login = Action { implicit request =>
@@ -46,6 +48,30 @@ object UserApp extends Controller with Secured{
         }
       } else {
         Ok(views.html.neonlogin(loginForm.fill((userInfo._1, "")).withError("merror", "email invalid")))
+      }
+    })
+  }
+
+  def register = Action{ implicit request =>
+    Ok(views.html.neonlogin(loginForm))
+  }
+
+  def registerVerify = Action {implicit request =>
+    registerForm.bindFromRequest.fold(formWithErrors=>BadRequest(views.html.neonlogin(loginForm)), userInfo =>{
+      val user = User.getUserByEmail(userInfo._1)
+      if(user.isDefined){
+        if(userInfo._2==userInfo._3){
+          val uid = User.addUser(userInfo._1, userInfo._2)
+          if(uid>0){
+            Ok("register OK")
+          } else {
+            Ok("register fail with some reason")
+          }
+        }else{
+          Ok("password not OK")
+        }
+      }else {
+        Ok("already exist email")
       }
     })
   }

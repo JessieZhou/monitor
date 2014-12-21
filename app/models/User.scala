@@ -70,6 +70,13 @@ object User {
     }
   }
 
+  def addUser(email: String, password: String) = {
+    DB.withConnection{implicit c=>
+      val uid: Option[Long] = SQL("insert into user(email,password) values({email},{password})").on('email->email, 'password->password).executeInsert()
+      uid.getOrElse(-1L)
+    }
+  }
+
   def updateEmailSet(id: Int, email: String, needemail: Int) = {
     DB.withConnection{implicit c =>
       SQL("update user set email={email} and needemail={needemail} where id={id}")
