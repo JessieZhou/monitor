@@ -32,7 +32,7 @@ object UserKeywordApp extends Controller with Secured{
   def list() = withAuth{userid => implicit request=>
     val uid = userid.toLong
     val uklist = UserKeyword.getByUid(uid)
-    Ok(uklist)
+    Ok("")
   }
 
 }

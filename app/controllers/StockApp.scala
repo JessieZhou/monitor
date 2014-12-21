@@ -12,7 +12,7 @@ object StockApp extends Controller with Secured{
 
   def list() = withAuth{userid => implicit request=>
     val stocks = Stock.getByUid(userid.toLong)
-    Ok(stocks)
+    Ok("")
   }
 
   def listBySite(sid: Long, site: String) = withAuth{userid => implicit request=>
@@ -20,7 +20,7 @@ object StockApp extends Controller with Secured{
     // TODO: get list here
     val items: List[PageItem] = ???
 
-    Ok(items)
+    Ok("")
   }
 
   def dingtie(url: String, content: String) = withAuth{userid => implicit request=>

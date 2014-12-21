@@ -22,7 +22,7 @@ object UserApp extends Controller with Secured{
   val loginForm = Form(tuple("email" -> email, "password" -> nonEmptyText()))
 
   val registerForm = Form(
-    tuple("email" -> email, "password" -> nonEmptyText(),"repassword"->nonEmptyText
+    tuple("email" -> email, "password" -> nonEmptyText(),"repassword"->nonEmptyText)
   )
 
   // login page
