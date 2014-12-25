@@ -8,6 +8,8 @@ import play.api.mvc.Controller
  * Created by chenlingpeng on 14-12-21.
  */
 object StockApp extends Controller with Secured{
+  val idGubaMap = Map(1->"dfcf",2->"hexun",3->"jinrongjie")
+
   val siteUrlMap = Map("dfcf"->"")
 
   def list() = withAuth{userid => implicit request=>
