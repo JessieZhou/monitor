@@ -1,6 +1,6 @@
 package controllers
 
-import models.{HistoryKeyword, Keyword, UserKeyword}
+import models.{HistoryPage, HistoryKeyword, Keyword, UserKeyword}
 import play.api.libs.json.{JsNumber, JsString, JsObject, Json}
 import play.api.mvc.Controller
 
@@ -26,6 +26,14 @@ object HistoryApp extends Controller with Secured {
   }
 
   def historyview(ukid: Long) = withAuth { username => implicit request =>
+    val hid = UserKeyword.getByIdFromCache(ukid).hid.get
+    val historyNews = HistoryPage.getByHid(hid)
+    Ok("")
+  }
+
+  def historypageview(ukid: Long, page: Int) = withAuth { username => implicit request =>
+    val hid = UserKeyword.getByIdFromCache(ukid).hid.get
+    val historyNews = HistoryPage.getByHid(hid, page)
     Ok("")
   }
 }

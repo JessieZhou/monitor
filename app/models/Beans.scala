@@ -72,4 +72,6 @@ object ExternalWebsite {
   }
 }
 
+
+// for guba
 case class PageItem(url: String, title: String)
