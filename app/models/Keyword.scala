@@ -105,7 +105,7 @@ object UserKeyword {
     DB.withConnection { implicit c =>
       SQL("update userkeyword set auxiliary={auxiliary} where id={id}")
         .on('id->id, 'auxiliary->auxiliary)
-        .executeUpdate()
+        .execute()
     }
   }
 
@@ -113,7 +113,7 @@ object UserKeyword {
     DB.withConnection { implicit c =>
       SQL("update userkeyword set hid={hid} where id={id}")
         .on('id->id, 'hid->hid)
-        .executeUpdate()
+        .execute()
     }
   }
 
