@@ -28,4 +28,6 @@ libraryDependencies += "com.twitter" % "util-core_2.10" % "6.22.1"
 
 libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.1"
 
+libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.5" withSources()
 
+libraryDependencies += "log4j" % "log4j" % "1.2.16"

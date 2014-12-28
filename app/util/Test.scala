@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Created by chenlingpeng on 2014/10/27.
  */
-class Test extends App{
+object Test extends App{
   def filter(page: Int, uid: Long, projectid: Long, groupid: Long, state: Int) = {
     val sql = new StringBuilder("select * from task ")
     val params = new ArrayBuffer[String]()
@@ -33,5 +33,8 @@ class Test extends App{
 
   }
 
-  filter(1,3,4,5,3)
+//  filter(1,3,4,5,3)
+
+  StockUtils.DFCF.dfcfDingtie("http://guba.eastmoney.com/news,000783,136381927.html", "对的呢")
+
 }
