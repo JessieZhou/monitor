@@ -11,6 +11,8 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
 import play.api.Logger
 
+import scala.collection.mutable
+
 /**
  * Created by chenlingpeng on 2014/12/28.
  */
@@ -30,8 +32,10 @@ object StockUtils {
       scheduledThreadPool.scheduleAtFixedRate(new FatieWorker(),1L, 3L, TimeUnit.MINUTES)
     }
 
-    private case class FatieTask(number: String, title: String, content: String)
-    val queue = new scala.collection.mutable.Queue[FatieTask]
+    case class FatieTask(number: String, title: String, content: String)
+
+    val queue = new mutable.Queue[FatieTask]()
+
     private class FatieWorker extends Runnable {
       override def run() = {
         Logger.info("定时任务开始")
@@ -94,7 +98,7 @@ object StockUtils {
       val httpPost = new HttpPost("http://guba.eastmoney.com/action.aspx")
       val host = "guba.eastmoney.com"
       val origin = "http://guba.eastmoney.com"
-      val ref = "http://guba.eastmoney.com/list," + number + ".html"
+      val ref = "http://guba.eastmoney.com/list," + task.number + ".html"
       httpPost.addHeader("Host", host)
       httpPost.addHeader("Origin", origin)
       httpPost.addHeader("Referer", ref)

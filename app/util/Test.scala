@@ -35,6 +35,6 @@ object Test extends App{
 
 //  filter(1,3,4,5,3)
 
-  StockUtils.DFCF.dfcfDingtie("http://guba.eastmoney.com/news,000783,136381927.html", "对的呢")
+  StockUtils.DFCF.dingtie("http://guba.eastmoney.com/news,000783,136381927.html", "对的呢")
 
 }
