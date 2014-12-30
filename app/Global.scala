@@ -7,6 +7,6 @@ import util.StockUtils
 object Global extends GlobalSettings{
   override def onStart(app: Application) {
     Logger.info("Application has started")
-    StockUtils.DFCF.dfcfDingtie("http://guba.eastmoney.com/news,600569,138593349.html", "对的呢")
+//    StockUtils.DFCF.dfcfDingtie("http://guba.eastmoney.com/news,600569,138593349.html", "对的呢")
   }
 }

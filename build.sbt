@@ -31,3 +31,5 @@ libraryDependencies += "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2
 libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.5" withSources()
 
 libraryDependencies += "log4j" % "log4j" % "1.2.16"
+
+libraryDependencies += "org.jsoup" % "jsoup" % "1.7.3"
