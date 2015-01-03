@@ -42,4 +42,8 @@ object TimeFormatUtil {
     calendar.set(Calendar.MILLISECOND,0)
     calendar.getTimeInMillis-8 * 60 * 60 * 1000
   }
+
+  def getToday = {
+    (1L, System.currentTimeMillis())
+  }
 }

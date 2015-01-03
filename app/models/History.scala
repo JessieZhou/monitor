@@ -15,21 +15,21 @@ case class HistoryPage(id: Long, hid:Long, ctime: Long, title: String, emotion: 
 object HistoryPage {
   val simple = {
     get[Long]("historypage.id") ~
-      get[Long]("historypage.hid") ~
+      get[Long]("historypage.ukid") ~
       get[Long]("historypage.ctime") ~
       get[String]("historypage.title") ~
       get[Int]("historypage.emotion") ~
       get[String]("historypage.url") ~
       get[String]("historypage.source") ~
-      get[String]("historypage.summary") map { case id ~ hid ~ ctime ~ title ~ emotion ~ url ~ source  ~ summary =>
-      HistoryPage(id, hid, ctime, title, emotion, url, source, summary)
+      get[String]("historypage.summary") map { case id ~ ukid ~ ctime ~ title ~ emotion ~ url ~ source  ~ summary =>
+      HistoryPage(id, ukid, ctime, title, emotion, url, source, summary)
     }
   }
 
-  def addHistoryPage(hid: Long, ctime: Long, title: String, emotion: Int, url: String, source: String, summary: String) = {
+  def addHistoryPage(ukid: Long, ctime: Long, title: String, emotion: Int, url: String, source: String, summary: String) = {
     DB.withConnection { implicit c =>
-      SQL("insert into historypage(hid,ctime,title,emotion,url,source,summary) values({hid},{ctime},{title},{emotion},{url},{source},{summary})")
-        .on('hid->hid, 'ctime -> ctime, 'title -> title, 'emotion -> emotion, 'url -> url, 'source -> source,  'summary -> summary)
+      SQL("insert into historypage(ukid,ctime,title,emotion,url,source,summary) values({ukid},{ctime},{title},{emotion},{url},{source},{summary})")
+        .on('ukid->ukid, 'ctime -> ctime, 'title -> title, 'emotion -> emotion, 'url -> url, 'source -> source,  'summary -> summary)
         .execute()
     }
   }
@@ -39,23 +39,23 @@ object HistoryPage {
    * @param url the url checked
    * @return
    */
-  def checkIfExist(hid: Long, url: String) = {
+  def checkIfExist(ukid: Long, url: String) = {
     val page = DB.withConnection{implicit c=>
-      SQL("select * from historypage where hid={hid} and url={url}").on('hid->hid, 'url->url).as(simple.singleOpt)
+      SQL("select * from historypage where ukid={ukid} and url={url}").on('ukid->ukid, 'url->url).as(simple.singleOpt)
     }
     page.isDefined
   }
 
-  def getByHid(hid: Long) = {
+  def getByUkid(ukid: Long) = {
     DB.withConnection { implicit c =>
-      SQL("select * from historypage where hid={hid}").on('hid -> hid).as(simple *)
+      SQL("select * from historypage where ukid={ukid}").on('ukid -> ukid).as(simple *)
     }
   }
 
   // for pagin
-  def getByHid(hid: Long, pagenum: Int, pagesize: Int = 15) = {
+  def getByUkid(ukid: Long, pagenum: Int, pagesize: Int = 15) = {
     DB.withConnection { implicit c =>
-      SQL("select * from historypage where hid={hid} limit {pagesize} offset {offset}").on('hid -> hid, 'pagesize -> pagesize, 'offset -> (pagenum - 1) * pagesize).as(simple *)
+      SQL("select * from historypage where ukid={ukid} limit {pagesize} offset {offset}").on('ukid -> ukid, 'pagesize -> pagesize, 'offset -> (pagenum - 1) * pagesize).as(simple *)
     }
   }
 

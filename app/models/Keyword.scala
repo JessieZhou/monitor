@@ -6,6 +6,8 @@ import play.api.cache.Cache
 import play.api.db.DB
 import play.api.Play.current
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * Created by chenlingpeng on 2014/12/16.
  */
@@ -144,23 +146,24 @@ object UserKeyword {
 
 }
 
-case class KeywordPage(id: Long, ukid: Long, emotion: Int, types: Int, website: String, ctime: Long, url: String, summary: String)
+case class KeywordPage(id: Long, ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: Long, url: String, summary: String)
 
 object KeywordPage {
   val simple = {
     get[Long]("keywordpage.id") ~
       get[Long]("keywordpage.ukid") ~
+      get[String]("keywordpage.title")~
       get[Int]("keywordpage.emotion") ~
       get[Int]("keywordpage.types") ~
       get[String]("keywordpage.website") ~
       get[Long]("keywordpage.ctime") ~
       get[String]("keywordpage.url") ~
-      get[String]("keywordpage.summary") map {case id~ukid~emotion~types~website~ctime~url~summary =>
-      KeywordPage(id, ukid, emotion, types, website, ctime, url, summary)
+      get[String]("keywordpage.summary") map {case id~ukid~title~emotion~types~website~ctime~url~summary =>
+      KeywordPage(id, ukid, title, emotion, types, website, ctime, url, summary)
     }
   }
 
-  def addKeywordPage(ukid: Long, emotion: Int, types: Int, website: String, ctime: String, url: String, summary: String) = {
+  def addKeywordPage(ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: String, url: String, summary: String) = {
     def checkIfNotExist = {
       DB.withConnection{implicit c=>
         SQL("select * from keywordpage where ukid={ukid} and url={url}").on('ukid->ukid, 'url->url).as(simple.singleOpt).isEmpty
@@ -168,8 +171,8 @@ object KeywordPage {
     }
     if(checkIfNotExist) {
       DB.withConnection { implicit c =>
-        SQL("inset into keywordpage(ukid,emotion,types,website,ctime,url,summary) values({ukid},{emotion},{types},{website},{ctime},{url},{summary})")
-          .on('ukid -> ukid, 'emotion -> emotion, 'types -> types, 'website -> website, 'ctime -> ctime, 'url -> url, 'summary -> summary)
+        SQL("inset into keywordpage(ukid,title,emotion,types,website,ctime,url,summary) values({ukid},{title},{emotion},{types},{website},{ctime},{url},{summary})")
+          .on('ukid -> ukid, 'title->title, 'emotion -> emotion, 'types -> types, 'website -> website, 'ctime -> ctime, 'url -> url, 'summary -> summary)
           .execute()
       }
     }
@@ -180,4 +183,39 @@ object KeywordPage {
       SQL("select * from keywordpage where ukid={ukid}").on('ukid->ukid).as(simple *)
     }
   }
+
+  // 重要舆情
+  def getRecentPages(ukid: Long) = {
+    DB.withConnection{implicit c=>
+      SQL("select * from keywordpage where ukid = {ukid} and emotion<>0 order by ctime desc limit 10")
+        .on('ukid->ukid).as(simple *)
+    }
+  }
+
+  def getNegPages(ukid: Long) = {
+    DB.withConnection{implicit c=>
+      SQL("select * from keywordpage where ukid={ukid} and emotion<0 order by ctime desc limit 10")
+        .on('ukid->ukid).as(simple *)
+    }
+  }
+
+  // TODO:
+  def getPagesWithFilter(ukid: Long, emotion: Int, today: Boolean, page: Int = 0) = {
+    DB.withConnection{implicit c=>
+      val filter = new ArrayBuffer[String]()
+      filter += "ukid={ukid}"
+      filter += {
+        emotion match {
+          case pos if pos > 0 => "emotion>0"
+          case neg if neg < 0 => "emotion<0"
+          case plain if plain == 0 => "emotion=0"
+        }
+      }
+      if(today){
+
+      }
+      SQL("select * from keywordpage where ")
+    }
+  }
+
 }
