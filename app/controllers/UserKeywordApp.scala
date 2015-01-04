@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Keyword, UserKeyword}
+import models.{KeywordPage, Keyword, UserKeyword}
 import play.api.libs.json.{JsNumber, JsString, JsObject, Json}
 import play.api.mvc.Controller
 
@@ -64,6 +64,60 @@ object UserKeywordApp extends Controller with Secured{
     val uid = userid.toLong
     val uklist = UserKeyword.getByUid(uid)
     Ok("")
+  }
+
+  // ajax
+  def recentPages(ukid: Long) = withAuth{userid => implicit request=>
+    val uid = UserKeyword.getByIdFromCache(ukid).uid
+    if(uid != userid.toLong){
+      Ok("ERROR")
+    } else {
+      val pages = KeywordPage.getRecentPages(ukid)
+      Ok("")
+    }
+  }
+
+  // ajax
+  def negPages(ukid: Long) = withAuth{userid => implicit request=>
+    val uid = UserKeyword.getByIdFromCache(ukid).uid
+    if(uid != userid.toLong){
+      Ok("ERROR")
+    } else {
+      val pages = KeywordPage.getNegPages(ukid)
+      Ok("")
+    }
+  }
+
+  def listPages(ukid: Long) = withAuth{userid => implicit request=>
+    val uid = UserKeyword.getByIdFromCache(ukid).uid
+    if(uid != userid.toLong){
+      Ok("ERROR")
+    } else {
+      val pages = KeywordPage.getByUkid(ukid)
+      Ok("")
+    }
+  }
+
+  def listPagesByPagin(ukid: Long) = withAuth{userid => implicit request=>
+    val page = request.body.asFormUrlEncoded.get("page")(0).toInt
+    val uid = UserKeyword.getByIdFromCache(ukid).uid
+    if(uid != userid.toLong){
+      Ok("ERROR")
+    } else {
+      val pages = KeywordPage.getByUkid(ukid, page)
+      Ok("")
+    }
+  }
+
+  def emotionAnalysis(ukid: Long) = withAuth{userid => implicit request=>
+    val uid = UserKeyword.getByIdFromCache(ukid).uid
+    if(uid != userid.toLong){
+      Ok("ERROR")
+    } else {
+//      val pages = KeywordPage.getByUkid(ukid, page)
+      val statis = KeywordPage.emotionStatistic(ukid)
+      Ok("")
+    }
   }
 
 }

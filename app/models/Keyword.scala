@@ -5,6 +5,8 @@ import anorm._
 import play.api.cache.Cache
 import play.api.db.DB
 import play.api.Play.current
+import play.api.libs.json.Json
+import util.TimeFormatUtil
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -63,7 +65,14 @@ object Keyword {
 }
 
 
-case class UserKeyword(id: Long, uid: Long, kid: Long, auxiliary: Option[String], hid: Option[Long])
+case class UserKeyword(id: Long, uid: Long, kid: Long, auxiliary: Option[String]) {
+  def jsonObj = {
+    Json.obj(
+    "id"->id,
+    "keyword"->Keyword.getByIdFromCache(kid).keyword
+    )
+  }
+}
 
 object UserKeyword {
   val idCacheKey = "cache.userkeyword.id."
@@ -73,9 +82,8 @@ object UserKeyword {
     get[Long]("userkeyword.id") ~
       get[Long]("userkeyword.uid") ~
       get[Long]("userkeyword.kid") ~
-      get[Option[String]]("userkeyword.auxiliary") ~
-      get[Option[Long]]("userkeyword.hid") map { case id ~ uid ~ kid ~ auxiliary ~ hid=>
-      UserKeyword(id, uid, kid, auxiliary, hid)
+      get[Option[String]]("userkeyword.auxiliary") map { case id ~ uid ~ kid ~ auxiliary=>
+      UserKeyword(id, uid, kid, auxiliary)
     }
   }
 
@@ -111,14 +119,6 @@ object UserKeyword {
     }
   }
 
-  def updateHid(id: Long, hid: Long) = {
-    DB.withConnection { implicit c =>
-      SQL("update userkeyword set hid={hid} where id={id}")
-        .on('id->id, 'hid->hid)
-        .execute()
-    }
-  }
-
   def deleteById(id: Long) = {
     DB.withConnection { implicit c =>
       SQL("update userkeyword set uid={uid} where id={id}")
@@ -146,7 +146,18 @@ object UserKeyword {
 
 }
 
-case class KeywordPage(id: Long, ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: Long, url: String, summary: String)
+case class KeywordPage(id: Long, ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: Long, url: String, summary: String) {
+  def jsonObj = Json.obj(
+    "id"->id,
+    "title"->title,
+    "emotion"->emotion,
+    "types"->types,
+    "website"->website,
+    "ctime"->ctime,
+    "url"->url,
+    "summary"->summary
+  )
+}
 
 object KeywordPage {
   val simple = {
@@ -163,7 +174,7 @@ object KeywordPage {
     }
   }
 
-  def addKeywordPage(ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: String, url: String, summary: String) = {
+  def addKeywordPage(ukid: Long, title: String, emotion: Int, types: Int, website: String, ctime: Long, url: String, summary: String) = {
     def checkIfNotExist = {
       DB.withConnection{implicit c=>
         SQL("select * from keywordpage where ukid={ukid} and url={url}").on('ukid->ukid, 'url->url).as(simple.singleOpt).isEmpty
@@ -181,6 +192,24 @@ object KeywordPage {
   def getByUkid(ukid: Long) = {
     DB.withConnection{implicit c=>
       SQL("select * from keywordpage where ukid={ukid}").on('ukid->ukid).as(simple *)
+    }
+  }
+
+
+  // TODO:
+  def getTodayByUkid(ukid: Long) = {
+    val (begin, end) = TimeFormatUtil.getToday
+    DB.withConnection{implicit c=>
+      SQL("select * from keywordpage where ukid={ukid} and ctime>{begin} and ctime<{end}")
+        .on('ukid->ukid,'begin->begin,'end->end).as(simple *)
+    }
+  }
+
+  def getByUkid(ukid: Long, pagenum: Int, pagesize: Int = 15) = {
+    DB.withConnection{implicit c=>
+      SQL("select * from keywordpage where ukid={ukid} limit {pagesize} offset {offset}")
+        .on('ukid->ukid, 'pagesize->pagesize, 'offset->(pagenum-1)*pagesize)
+      .as(simple *)
     }
   }
 
@@ -216,6 +245,38 @@ object KeywordPage {
       }
       SQL("select * from keywordpage where ")
     }
+  }
+
+  // TODO
+  def emotionStatistic(ukid: Long) = {
+    val pages = getByUkid(ukid)
+    var pos = 0
+    var neg = 0
+    var plain = 0
+    pages.foreach{(page: KeywordPage)=>
+      if(page.emotion>0) pos+=1
+      else if(page.emotion<0) neg+=1
+      else plain+=1
+    }
+    (pos,plain,neg)
+  }
+
+  def emotionStatisticToday(ukid: Long) = {
+    val pages = getTodayByUkid(ukid)
+    var pos = 0
+    var neg = 0
+    var plain = 0
+    pages.foreach{(page: KeywordPage)=>
+      if(page.emotion>0) pos+=1
+      else if(page.emotion<0) neg+=1
+      else plain+=1
+    }
+    (pos,plain,neg)
+  }
+
+  // TODO:
+  def emotionTrend(ukid: Long) = {
+    val pages = getByUkid(ukid)
   }
 
 }

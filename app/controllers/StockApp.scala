@@ -9,11 +9,27 @@ import play.api.mvc.Controller
  */
 object StockApp extends Controller with Secured{
   val idGubaMap = Map(1->"dfcf",2->"hexun",3->"jinrongjie")
+  val regCode = "\\d".r
 
   val siteUrlMap = Map("dfcf"->"")
 
   def list() = withAuth{userid => implicit request=>
     val stocks = Stock.getByUid(userid.toLong)
+    Ok("")
+  }
+
+  def addStock() = withAuth{userid => implicit request=>
+    val stockName = request.body.asFormUrlEncoded.get("stockname")(0)
+    val stockCode = request.body.asFormUrlEncoded.get("stockcode")(0)
+    // TODO: should verify code with all number
+    val sid = Stock.addStock(userid.toLong, stockCode, stockName)
+
+    Ok("")
+  }
+
+  def delStock() = withAuth{userid => implicit request=>
+    val sid = request.body.asFormUrlEncoded.get("sid")(0).toLong
+    Stock.deleteById(sid)
     Ok("")
   }
 
