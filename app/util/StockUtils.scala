@@ -4,14 +4,18 @@ import java.net.URLEncoder
 import java.util
 import java.util.concurrent.{TimeUnit, Executors}
 
+import models.PageItem
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.{HttpPost, HttpGet}
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import play.api.Logger
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 /**
  * Created by chenlingpeng on 2014/12/28.
@@ -124,7 +128,23 @@ object StockUtils {
     }
 
     def list(number: String) = {
-
+      val  url = s"http://guba.eastmoney.com/list,$number.html";
+      val httpClient = HttpClientUtil.getHttpClient
+      val httpGet = new HttpGet(url)
+      val response = httpClient.execute(httpGet)
+      val html = EntityUtils.toString(response.getEntity)
+      val document = Jsoup.parse(html)
+      val tmps = document.getElementById("articlelistnew").select(".articleh")
+      val items = new ListBuffer[PageItem]
+      for(tmp: Element <- tmps) {
+        if(tmp.select(".settop").size()==0) {
+          val select = tmp.getElementsByClass("l3").get(0).getElementsByTag("a").get(0)
+          val title = select.attr("title")
+          val url = "http://guba.eastmoney.com/" + select.attr("href")
+          items += PageItem(url, title)
+        }
+      }
+      items.toList
     }
   }
 
