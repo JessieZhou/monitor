@@ -136,7 +136,8 @@ object StockUtils {
       val document = Jsoup.parse(html)
       val tmps = document.getElementById("articlelistnew").select(".articleh")
       val items = new ListBuffer[PageItem]
-      for(tmp: Element <- tmps) {
+      import scala.collection.JavaConversions._
+      for(tmp: Element <- tmps){
         if(tmp.select(".settop").size()==0) {
           val select = tmp.getElementsByClass("l3").get(0).getElementsByTag("a").get(0)
           val title = select.attr("title")
@@ -144,6 +145,7 @@ object StockUtils {
           items += PageItem(url, title)
         }
       }
+
       items.toList
     }
   }
