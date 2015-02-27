@@ -15,9 +15,13 @@ object Application extends Controller with Secured {
   // dashboard
   def index = withAuth { username => implicit request =>
       val user = User.getUserByEmailFromCache(username)
-      val keywords = UserKeyword.getByUid(user.id)
+      val keywords = UserKeyword.getByUid(user.get.id)
       Ok(views.html.index(User.getUserByEmail(username).get))
     }
+
+  def test = Action{
+    Ok("test")
+  }
 
 
 

@@ -65,8 +65,8 @@ object User {
   }
 
   def getUserByEmailFromCache(email: String) = {
-    Cache.getOrElse[User](emailCacheKey + email) {
-      getUserByEmail(email).get
+    Cache.getOrElse[Option[User]](emailCacheKey + email) {
+      getUserByEmail(email)
     }
   }
 
@@ -77,19 +77,31 @@ object User {
     }
   }
 
-  def updateEmailSet(id: Int, email: String, needemail: Int) = {
-    DB.withConnection{implicit c =>
-      SQL("update user set email={email} and needemail={needemail} where id={id}")
-      .on('email->email, 'needemail->needemail, 'id->id)
+  def updateEmailSet(id: Long, reportemail: Option[String], needemail: Int) = {
+    val c = DB.withConnection{implicit c =>
+      SQL("update user set reportemail={reportemail} and needemail={needemail} where id={id}")
+      .on('reportemail->reportemail, 'needemail->needemail, 'id->id)
       .executeUpdate()
+    }
+    if(c==1){
+      // todo: get from cache
+      val user = getUserById(id)
+      Cache.set(idCacheKey+id, user)
+      Cache.set(emailCacheKey+user.email, Some(user))
     }
   }
 
-  def updatePhoneSet(id: Int, phone: String, needphone: Int) = {
-    DB.withConnection{implicit c =>
-      SQL("update user set phone={phone} and needphone={needphone} where id={id}")
-        .on('phone->phone, 'needphone->needphone, 'id->id)
+  def updatePhoneSet(id: Long, reportphone: Option[String], needphone: Int) = {
+    val c = DB.withConnection{implicit c =>
+      SQL("update user set reportphone={reportphone} and needphone={needphone} where id={id}")
+        .on('reportphone->reportphone, 'needphone->needphone, 'id->id)
         .executeUpdate()
+    }
+    if(c==1){
+      // todo: get from cache
+      val user = getUserById(id)
+      Cache.set(idCacheKey+id, user)
+      Cache.set(emailCacheKey+user.email, Some(user))
     }
   }
 
@@ -102,14 +114,14 @@ object User {
     }
   }
 
-  def resetPsw(old:String, email: String, password: String) = {
+  def resetPsw(id: Long, old:String, email: String, password: String) = {
     DB.withConnection { implicit c =>
-      val res = SQL("update user set password = {password} where email = {email} and password = {old}")
-        .on('password -> password, 'email -> email, 'old -> old).executeUpdate()
+      val res = SQL("update user set password = {password} where email = {email} and password = {old} and id={id}")
+        .on('password -> password, 'email -> email, 'old -> old,'id->id).executeUpdate()
       if(res>0){
-        val user = User.getUserByEmail(email)
-        Cache.set(emailCacheKey+email,user)
-        Cache.set(idCacheKey+user.get.id,user)
+        val user = User.getUserById(id)
+        Cache.set(emailCacheKey+email,Some(user))
+        Cache.set(idCacheKey+user.id,user)
       }
       res>0
     }
@@ -119,6 +131,12 @@ object User {
     DB.withConnection { implicit c =>
       SQL("update user set password = {password} where email = {email}")
         .on('password -> password, 'email -> email).executeUpdate()
+    }
+  }
+
+  def emailExist(email: String) = {
+    DB.withConnection{implicit c=>
+      SQL("select * from user where email={email}").on('email->email).as(simple.singleOpt).isDefined
     }
   }
 }
